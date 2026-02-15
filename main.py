@@ -23,9 +23,21 @@ async def main():
     # Shedulers
     scheduler = AsyncIOScheduler(timezone="Europe/Kyiv")
     scheduler.add_job(ask_users_job, "cron", hour=21, minute=0, args=[bot, dp])
-    scheduler.start()
 
-    await dp.start_polling(bot)
+    # TESTING PURPOSE
+    # scheduler.add_job(ask_users_job, "interval", minutes=1, args=[bot, dp])
+
+    scheduler.start()
+    
+    # Polling
+    try:
+        await dp.start_polling(bot)
+    finally:
+        await bot.session.close()
+
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except (KeyboardInterrupt, SystemExit):
+        logging.info("Bot stopped!")

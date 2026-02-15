@@ -28,7 +28,22 @@ async def get_all_answers():
         result = await session.execute(select(DailyAnswer.user_id, DailyAnswer.answer_text))
         return result.scalars().all()
 
+
 async def save_note(user_id: int, text: str):
     async with SessionMaker() as session:
         session.add(Note(user_id=user_id, content=text))
         await session.commit()
+
+
+async def get_user_notes(user_id: int):
+    async with SessionMaker() as session:
+        query = select(Note).where(Note.user_id == user_id).order_by(Note.created_at.desc())
+        result = await session.execute(query)
+        return result.scalars().all()
+
+
+async def get_user_answers(user_id: int):
+    async with SessionMaker() as session:
+        query = select(DailyAnswer).where(DailyAnswer.user_id == user_id).order_by(DailyAnswer.created_at.desc())
+        result = await session.execute(query)
+        return result.scalars().all()
